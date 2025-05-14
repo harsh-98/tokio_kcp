@@ -263,7 +263,7 @@ impl KcpSession {
         self.input_tx.send(buf.to_owned()).await.map_err(|_| SessionClosedError)
     }
 
-    pub  fn conv(&self) -> u32 {
+    pub async fn conv(&self) -> u32 {
         let socket = self.socket.lock();
         socket.conv()
     }
@@ -324,7 +324,11 @@ impl KcpSessionManager {
         peer_addr: SocketAddr,
         session_close_notifier: &mpsc::Sender<SocketAddr>,
     ) -> KcpResult<(Arc<KcpSession>, bool)> {
-        let old_conv_id = self.sessions.get(&peer_addr).map(|s| s.conv());
+        let old_conv_id = if let Some(session) = self.sessions.get(&peer_addr) {
+            Some(session.conv().await)
+        } else {
+            None
+        };
         let update = old_conv_id.is_none() || (sn ==0 && old_conv_id.unwrap() != conv);
         if old_conv_id.is_none() || (sn ==0 && old_conv_id.unwrap() != conv) {
             let socket = KcpSocket::new(config, conv, udp.clone(), peer_addr, config.stream)?;

@@ -99,7 +99,7 @@ impl KcpListener {
                                                 continue;
                                             }
                                         } else {
-                                            let session_conv = s.conv();
+                                            let session_conv = s.conv().await;
                                             if session_conv != conv {
                                                 debug!("received peer: {} with conv: {} not match with session conv: {}",
                                                        peer_addr,
