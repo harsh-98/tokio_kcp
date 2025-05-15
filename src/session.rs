@@ -329,8 +329,8 @@ impl KcpSessionManager {
         } else {
             None
         };
-        let update = old_conv_id.is_none() || (sn ==0 && old_conv_id.unwrap() != conv);
-        if old_conv_id.is_none() || (sn ==0 && old_conv_id.unwrap() != conv) {
+        let update = old_conv_id.is_none() || (sn == 0 && old_conv_id.unwrap() != conv);
+        if old_conv_id.is_none() || (sn == 0 && old_conv_id.unwrap() != conv) {
             let socket = KcpSocket::new(config, conv, udp.clone(), peer_addr, config.stream)?;
             let session = KcpSession::new_shared(
                 socket,
@@ -350,6 +350,5 @@ impl KcpSessionManager {
             self.sessions.entry(peer_addr).insert_entry(KcpSessionUniq(session));
         }
         Ok((self.sessions.get(&peer_addr).unwrap().0.clone(), update))
-    
     }
 }
